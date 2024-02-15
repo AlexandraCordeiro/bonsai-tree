@@ -1,2 +1,4 @@
 # bonsai-tree
-Generative bonsai tree using Processing
+A generative bonsai tree using Processing
+
+
