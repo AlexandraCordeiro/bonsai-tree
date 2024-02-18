@@ -2,8 +2,20 @@ int windowWidth = 1000;
 int windowHeight = 800;
 float w = windowWidth * 0.8;
 float h = windowHeight * 0.1;
+boolean alive = true;
 
+// Color Palettes
 
+color[] green = {#294B29, #50623A, #789461, #DBE7C9};
+color[] green2 = {#12372A, #436850, #789461, #FBFADA};
+color[] fall = {#5F0F40, #FB8B24, #E36414, #9A031E};
+color[] fall2 = {#6B240C, #994D1C, #E48F45, #F5CCA0};
+color[] fall3 = {#820300, #B80000, #E36414, #FB8B24};
+color[] spring = {#FFE4D6, #FACBEA, #D988B9, #B0578D};
+color[] spring2 = {#863A6F, #975C8D, #D989B5, #FFADBC};
+color[] spring3 = {#9A1663, #90A17D, #829460, #294B29};
+
+color[][] palettes = {green, green2, fall, fall2, fall3, spring, spring2, spring3};
 
 void settings() {
   size(windowWidth, windowHeight);
@@ -12,17 +24,44 @@ void settings() {
 void setup() {
   
   // center canvas
-  push();
+  /*push();
   translate(windowWidth*0.5, windowHeight*0.9);
   drawBase();
   drawPot();
   drawTrunk();
   pop();
-  save("bonsai.jpg");
+  save("bonsai.jpg");*/
   
 }
 
-/*void draw() {}*/
+void draw() {
+  
+  if (alive) {
+    push();
+    translate(windowWidth*0.5, windowHeight*0.9);
+    drawBase();
+    drawPot();
+    drawTrunk();
+    pop();
+  }
+  
+}
+
+// Utilities
+float degreesToRadians(float a) {
+  return (a * PI) / 180;
+}
+
+// angles in radians
+float[] newPoint(float x, float y, float angle, float distance) {
+  float[] newPoint = new float[2];
+  
+  newPoint[0] = x + distance * cos(angle);
+  newPoint[1] = y + distance * sin(angle);
+  
+  return newPoint;
+}
+
 
 // Bonsai
 
@@ -108,11 +147,13 @@ void drawPot() {
   }
 }
 
-void leaf(float x, float y, int maxLen) {
+void leaf(float x, float y, int maxLen, color[] colorPalette) {
   int n = int(random(0, maxLen));
+  
+  
   for (int i = 0; i < n; i++) {
     float r = random(10, 30);
-    fill(#294B29, random(50, 100));
+    fill(colorPalette[int(random(0, colorPalette.length))], random(50, 150));
     // down
     circle(x, y + r, r);
     // up
@@ -121,7 +162,7 @@ void leaf(float x, float y, int maxLen) {
   }
 }
 
-void newBranch(float xi, float yi, int direction, int depth) {
+void newBranch(float xi, float yi, int direction, int depth, color[] colorPalette) {
 
   int n = 1;
   int i;
@@ -133,6 +174,7 @@ void newBranch(float xi, float yi, int direction, int depth) {
   float maxHeight = -h*7;
   
   if (depth <= 0 || yi < maxHeight || xi + branchLength > w*0.7 || xi - branchLength < - w*0.7) {
+    alive = false;
     return;
   }
   
@@ -140,14 +182,14 @@ void newBranch(float xi, float yi, int direction, int depth) {
     newY = branchDirection * branchInclination * sqrt(n) + yi;
     fill(#561C24, random(150, 200));
     circle(direction*i, newY, random(5, 15)); 
-    leaf(direction * i, newY, 2);
+    leaf(direction * i, newY, 2, colorPalette);
     n++;
   }
-  newBranch(i, newY, direction, depth-1);
+  newBranch(i, newY, direction, depth-1, colorPalette);
 }
 
 
-void drawBranch(float xi, float yi, int direction, int depth) {
+void drawBranch(float xi, float yi, int direction, int depth, color[] colorPalette) {
   
   int n = 1;
   int i;
@@ -159,6 +201,7 @@ void drawBranch(float xi, float yi, int direction, int depth) {
   float newY = branchDirection * branchInclination * sqrt(n) + yi;
   
   if (depth <= 0 || yi < maxHeight || xi + branchLength > w*0.7 || xi - branchLength < - w*0.7) {
+    alive = false;
     return;
   }
   
@@ -167,16 +210,15 @@ void drawBranch(float xi, float yi, int direction, int depth) {
     newY = branchDirection * branchInclination * sqrt(n) + yi;
     fill(#561C24, random(150, 200));
     circle(direction*i, newY, random(5, 15));
-    leaf(direction * i, newY, 3);
+    leaf(direction * i, newY, 3, colorPalette);
     if (i%5==0) {
-      newBranch(i, newY, direction, 2);
-      println(direction, "addLeaf");
+      newBranch(i, newY, direction, 2, colorPalette);
     }    
     n++;
     
   }
 
-  drawBranch(i, newY, direction, depth -1);
+  drawBranch(i, newY, direction, depth -1, colorPalette);
 }
 
 
@@ -215,7 +257,9 @@ void drawTrunk() {
     }
   }
   
-  drawBranch(leftX, maxY, -1, 100);
-  drawBranch(rightX, maxY, 1, 100);
+  //random color palette
+  color[] colorPalette = palettes[int(random(0, palettes.length))];
+  drawBranch(leftX, maxY, -1, 100, colorPalette);
+  drawBranch(rightX, maxY, 1, 100, colorPalette);
   
 }
