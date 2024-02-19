@@ -11,3 +11,4 @@ A generative bonsai tree using Processing
 ## Inspiration
 
 - [cbonsai](https://gitlab.com/jallbrit/cbonsai)
+- [LEGO bonsai tree](https://www.lego.com/pt-pt/product/bonsai-tree-10281)
