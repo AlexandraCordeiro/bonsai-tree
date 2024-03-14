@@ -1,4 +1,4 @@
-# bonsai-tree
+# generative-bonsai-tree
 My first Processing sketch!
 A generative bonsai tree using Processing
 
